@@ -1,0 +1,1 @@
+GET offer HTTP/1.0

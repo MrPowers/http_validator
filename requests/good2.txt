@@ -1,0 +1,3 @@
+GET /offer HTTP/1.1
+Accept: text/plain
+Referer: http://www.signpost.com/

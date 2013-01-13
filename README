@@ -1,0 +1,44 @@
+This repo is an answer for the following challenge:
+
+Signpost's Offer Exchange (SOX), an industry leading marketplace for daily deals day trading, has been experiencing outages over the past few months which have been attributed to an influx of malformed HTTP requests from high-frequency traders Goldstone Bags and Blueman Group. As such, we've decided to have you implement a basic request validator based upon a simplified version of the HTTP 1.1 specification. A request must meet the following criteria to be considered valid:
+  • A request line consisting of a method, path, and version separated by whitespace
+  ◦ Method: “GET” or “POST”
+  ◦ Path: Any relative path, e.g., “/offer/1”
+  ◦ Version: “HTTP/1.1”
+  • Zero or more headers consisting of a name and value separated by a colon
+  ◦ Name: “Accept”, “Host”, or “Referer”
+  ◦ Value: One or more characters
+  • One blank line
+  • A body consisting of zero or more characters
+
+All characters will be considered 8-bit ASCII and all lines end with CRLF (characters 0x0D, 0x0A).
+
+Write a program that attempts to validate all files in the requests/ directory. If the file contains a valid request simply output the filename followed by “is valid,” otherwise, if the request is malformed, output the filename followed by a descriptive reason for why it is invalid.
+
+Please submit all files necessary to run your program as well as the requests in your requests/ directory.
+
+Valid Examples
+
+[1]
+POST /offer/1/buy HTTP/1.1
+Host: www.sox.com
+*blank line*
+amount=100
+
+[2]
+GET /offer HTTP/1.1
+Accept: text/plain
+Referer: http://www.signpost.com/
+*blank line*
+
+Invalid Examples
+
+[1]
+PUT /offer/1/buy HTTP/1.1
+Host: www.sox.com
+*blank line*
+amount=100
+
+[2]
+GET offer HTTP/1.0
+*blank line*
