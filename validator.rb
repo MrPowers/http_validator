@@ -10,6 +10,42 @@ class Validator
     set_variables
   end
 
+  def main
+    check_blank_lines
+    if @errors.empty?
+      puts "#{file_path.sub("./requests/", "")} is valid"
+    else
+      formatted_errors
+    end
+  end
+
+  def check_blank_lines
+    @contents.empty? ? add_error("The contents line is blank") : check_request_line
+    @headers.empty? ? add_error("The headers line is blank") : check_headers
+    @blank_line.empty? ? add_error("The blank line is nil") : check_blank_line
+  end
+
+  def check_request_line
+    method, path, version = @request_line.chomp.split
+    check_method(method)
+    check_path(path)
+    check_version(version)
+  end  
+
+  def check_headers
+    @headers.each do |header|
+      check_header(header)
+    end
+  end
+
+  def check_blank_line
+    unless @blank_line.chomp.empty?
+      add_error("The blank line is not blank")
+    end
+  end
+
+  private
+
   def set_variables
     @request_line = @contents[0]
     @headers = []
@@ -33,27 +69,6 @@ class Validator
     @errors.push(error)
   end
 
-  def main
-    p contents
-    p "Headers: #{headers}"
-    p "Blank Line: #{blank_line}"
-    @contents ? check_request_line : add_error("The contents line is blank")
-    @headers.empty? ? add_error("The headers line is blank") : check_headers
-    @blank_line ? check_blank_line : add_error("The blank line is nil")
-    if @errors.empty?
-      puts "#{file_path.sub("./requests/", "")} is valid"
-    else
-      formatted_errors
-    end
-  end
-
-  def check_request_line
-    method, path, version = @request_line.chomp.split
-    check_method(method)
-    check_path(path)
-    check_version(version)
-  end
-
   def check_method(method)
     unless ["GET", "POST"].include?(method)
       add_error("Not a GET or POST request")
@@ -72,15 +87,8 @@ class Validator
     end
   end
 
-  def check_headers
-    @headers.each do |header|
-      check_header(header)
-    end
-  end
-
   def check_header(header)
     name, url = header.split
-    puts "NAME: #{name}"
     check_name(name)
     if ["Host:", "Referer:"].include?(name)
       check_url(url)
@@ -97,14 +105,4 @@ class Validator
     uri = URI.parse(url)
     add_error("URL is invalid") unless uri.kind_of?(URI::HTTP)
   end
-
-  def check_blank_line
-    unless @blank_line.chomp.empty?
-      add_error("The blank line is not blank")
-    end
-  end
 end
-
-v = Validator.new("./requests/bad2.txt")
-p v.contents
-p v.main
